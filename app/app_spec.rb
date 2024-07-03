@@ -36,8 +36,16 @@ describe App do
       get '/'
     end
 
+    let(:counter) do
+      get "/counter"
+    end
+
     it 'returns status 200 OK' do
       expect(response.status).to eq 200
+    end
+
+    it 'should count the number of webhooks' do
+      expect(counter.body).to eq '1'
     end
 
     it 'should write to the database' do
@@ -74,12 +82,20 @@ describe App do
       get '/'
     end
 
+    let(:counter) do
+      get "/counter"
+    end
+
     it 'returns status 200 OK' do
       expect(response_one.status).to eq 200
       expect(response_two.status).to eq 200
     end
 
-    it 'should write to the database.json file' do
+    it 'should count the number of webhooks' do
+      expect(counter.body).to eq '2'
+    end
+
+    it 'should write to the database' do
       expect(JSON.parse(response_two.body)).to eq(
         'Asset:4079332:level' => {
           'time_sent' => '2020-03-04T09:15:00',

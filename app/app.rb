@@ -15,7 +15,12 @@ class App < Sinatra::Base
     JSON.pretty_generate(result)
   end
 
+  get '/counter' do
+    redis.get('webhook_counter').to_s
+  end
+
   get '/reset' do
+    redis.del('webhook_counter')
     redis.scan_each(match: 'Asset:*').map do |key|
       redis.del(key)
     end
@@ -23,6 +28,7 @@ class App < Sinatra::Base
   end
 
   post '/webhook' do
+    redis.incr('webhook_counter')
     # Check if the request is signed and the signature is correct
     request.body.rewind
     hash = request.env['HTTP_X_HUB_SIGNATURE_SHA256']
