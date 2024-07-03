@@ -1,3 +1,5 @@
 .env
-database.json
+app/database.json
 .idea/
+terraform.tfstate
+.terraform
