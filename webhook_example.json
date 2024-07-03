@@ -1,0 +1,20 @@
+{
+  "event_type": "asset_value_created",
+  "occurred_at": "2020-03-04T09:15:00",
+  "content": {
+    "asset": {
+      "id": 4079332,
+      "href": "https://api.netilion.endress.com/v1/assets/4079332"
+    },
+    "value": {
+      "key": "level",
+      "group": "measurement",
+      "unit": {
+        "id": 8594,
+        "href": "https://api.netilion.endress.com/v1/units/8594"
+      },
+      "timestamp": "2020-03-04T08:38:25Z",
+      "value": "96.45"
+    }
+  }
+}
