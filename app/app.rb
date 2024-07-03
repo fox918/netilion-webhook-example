@@ -1,11 +1,25 @@
-require "sinatra/base"
+# frozen_string_literal: true
+
+require 'sinatra/base'
 require 'dotenv/load'
+require 'redis'
 
 class App < Sinatra::Base
+  redis = Redis.new(url: ENV['REDIS_URL'])
 
   get '/' do
     content_type :json
-    File.read('database.json') rescue {}
+    result = redis.scan_each(match: 'Asset:*').map do |key|
+      [key, JSON.parse(redis.get(key))]
+    end.to_h
+    JSON.pretty_generate(result)
+  end
+
+  get '/reset' do
+    redis.scan_each(match: 'Asset:*').map do |key|
+      redis.del(key)
+    end
+    200
   end
 
   post '/webhook' do
@@ -13,7 +27,8 @@ class App < Sinatra::Base
     request.body.rewind
     hash = request.env['HTTP_X_HUB_SIGNATURE_SHA256']
     halt 403 if hash.nil?
-    calculated_signature = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), ENV['WEBHOOK_SECRET'], request.body.read)}"
+    calculated_signature = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), ENV['WEBHOOK_SECRET'],
+                                                             request.body.read)}"
 
     if ENV['VERBOSE'] == 'true'
       puts "Calculated signature: #{calculated_signature}"
@@ -27,7 +42,7 @@ class App < Sinatra::Base
     event = JSON.parse request.body.read
     halt 406 unless event['event_type'] == 'asset_value_created'
 
-    # Save it to the json we use as database ;), this is not a good practice, but for this example it is ok
+    # We use redis as a makeshift database ;)
     asset_id = event['content']['asset']['id']
     event_parsed = {
       time_sent: event['occurred_at'],
@@ -35,10 +50,7 @@ class App < Sinatra::Base
       value: event['content']['value']['value']
     }
 
-    database = JSON.parse(File.read('database.json')) rescue {}
-    database[asset_id] = event_parsed
-    File.write('database.json', JSON.pretty_generate(database))
-
+    redis.set("Asset:#{asset_id}", event_parsed.to_json)
     200
   end
 end
