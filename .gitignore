@@ -3,3 +3,4 @@ app/database.json
 .idea/
 terraform.tfstate
 .terraform
+/terraform.tfstate.backup
