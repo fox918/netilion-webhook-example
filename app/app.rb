@@ -44,13 +44,14 @@ class App < Sinatra::Base
 
     # We use redis as a makeshift database ;)
     asset_id = event['content']['asset']['id']
+    key_id = event['content']['value']['key']
     event_parsed = {
       time_sent: event['occurred_at'],
       time_value: event['content']['value']['timestamp'],
       value: event['content']['value']['value']
     }
 
-    redis.set("Asset:#{asset_id}", event_parsed.to_json)
+    redis.set("Asset:#{asset_id}:#{key_id}", event_parsed.to_json)
     200
   end
 end

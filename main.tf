@@ -52,18 +52,10 @@ resource "heroku_formation" "webhook_poc" {
   depends_on = [heroku_build.webhook_poc_build]
 }
 
-resource "heroku_addon" "webhook_cache" {
-  app_id  = heroku_app.webhook_poc_app.id
-  plan = "heroku-redis:mini"
+resource "heroku_addon" "webhook_poc_cache" {
+  app_id = heroku_app.webhook_poc_app.id
+  plan   = "heroku-redis:mini"
 }
-
-resource "herokux_redis_config" "webhook_cache_config" {
-  redis_id = heroku_addon.redis.id
-  maxmemory_policy = "allkeys-lfu"
-  timeout = 300
-}
-
-heroku-redis:mini
 
 output "app_url" {
   value = heroku_app.webhook_poc_app.web_url

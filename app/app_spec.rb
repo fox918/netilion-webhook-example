@@ -42,7 +42,7 @@ describe App do
 
     it 'should write to the database' do
       expect(JSON.parse(response.body)).to eq(
-        'Asset:4079332' => {
+        'Asset:4079332:level' => {
           'time_sent' => '2020-03-04T09:15:00',
           'time_value' => '2020-03-04T08:38:25Z',
           'value' => '96.45'
@@ -81,11 +81,11 @@ describe App do
 
     it 'should write to the database.json file' do
       expect(JSON.parse(response_two.body)).to eq(
-        'Asset:4079332' => {
+        'Asset:4079332:level' => {
           'time_sent' => '2020-03-04T09:15:00',
           'time_value' => '2020-03-04T08:38:25Z',
           'value' => '96.45'
-        }, 'Asset:9002' => {
+        }, 'Asset:9002:level' => {
           'time_sent' => '1991-03-04T09:15:00',
           'time_value' => '1991-03-04T08:38:25Z',
           'value' => '12.05'
